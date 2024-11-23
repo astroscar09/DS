@@ -35,40 +35,63 @@ from scipy.stats import f_oneway
 # one way ANOVA Test is an N-sample independent test 
 
 #Comparing sample to the populations
-stats.t.ppf(q = 0.025, 
-            df = n_samp - 1)
+# stats.t.ppf(q = 0.025, 
+#             df = n_samp - 1)
 
-stats.t.ppf(q = 0.975, 
-            df = n_samp - 1)
+# stats.t.ppf(q = 0.975, 
+#             df = n_samp - 1)
 
-sigma = sample.std()/np.sqrt(n_samp)
+# sigma = sample.std()/np.sqrt(n_samp)
 
-stats.t.interval(0.95,
-                df = n_samp - 1,
-                loc = sample.mean(),
-                scale= sigma)
+# stats.t.interval(0.95,
+#                 df = n_samp - 1,
+#                 loc = sample.mean(),
+#                 scale= sigma)
 
-stats.t.interval(0.99,
-                df = n_samp - 1,
-                loc = sample.mean(),
-                scale= sigma)
+# stats.t.interval(0.99,
+#                 df = n_samp - 1,
+#                 loc = sample.mean(),
+#                 scale= sigma)
 
 
-#Comparing two Independent samples
-ttest_ind(sample1, 
-          sample2, 
-          equal_var = False)
+# #Comparing two Independent samples
+# ttest_ind(sample1, 
+#           sample2, 
+#           equal_var = False)
 
-#comparing two paired samples (same sample)
-ttest_rel(before, 
-          after)
+# #comparing two paired samples (same sample)
+# ttest_rel(before, 
+#           after)
 
-#Anova test
-f_oneway(sample1, 
-         sample2, 
-         sample3)
+# #Anova test
+# f_oneway(sample1, 
+#          sample2, 
+#          sample3)
 
 #When doing a post test of the ANOVA you take the significant value 
 #and divide it by the number of tests you did
 #Bonferroni Correction
 
+#reading in the data that has the driving distance of a golf ball after applying a new coating to it
+#Current is old ball driving distance New is the driving distance after coating has been applied
+
+# We are trying to see if the new coat on the ball 
+# has made a significant difference in the driving distance
+
+#reading in the data
+df = pd.read_csv('Golf.csv')
+
+#grabbing the columns
+before = df['Current']
+after = df['New']
+
+threshold = 0.05
+
+#performing the t-test to see if the new coating has made a significant difference
+tscore, pval = ttest_ind(before, 
+                         after, 
+                         equal_var = False)
+
+print("t-score: ", tscore)
+print("p-value: ", pval)
+print('Null hypothesis rejected') if pval < threshold else print('Null hypothesis accepted')
