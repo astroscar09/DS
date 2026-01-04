@@ -1,2 +1,3 @@
 file: Golf.csv
 plot_dir: plots
+log_dir: 'logs'
