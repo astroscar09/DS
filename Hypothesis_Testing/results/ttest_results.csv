@@ -1,0 +1,4 @@
+,Test,t-stats,p_vals,Reject Null
+0,Paired-t-test,1.2769699827911767,0.20916361823147053,Fail to Reject
+1,Independent-t-test,1.3283615935245678,0.18798994530489838,Fail to Reject
+2,one-sample_t-test,-1.7733465125020238,0.0839808779070368,Fail to Reject
