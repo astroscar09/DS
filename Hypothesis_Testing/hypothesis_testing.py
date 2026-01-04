@@ -1,97 +1,52 @@
-import numpy as np
-import pandas as pd
-import scipy.stats as stats
-from scipy.stats import ttest_ind
-from scipy.stats import ttest_1samp
-from scipy.stats import ttest_rel
-from sklearn.model_selection import train_test_split
-from scipy.stats import f_oneway
-
-#######
-# 1-sample t-test for the mean
+from plotting_utils import *
+from stats_tests import *
+from data import *
+from scipy.stats import shapiro
 
 
-#######
-# 1-sample t-test for the proportion (qualitative data)
+# Example usage
+if __name__ == "__main__":
+    import yaml 
+
+    yaml_path = 'config.yaml'
+
+    with open(yaml_path, "r") as f:
+            config = yaml.safe_load(f)
+
+    data_file = config['file']
+    plot_dir = config['plot_dir']
+
+    # Load data
+    print("=== Loading Data ===")
+    df = load_data(data_file)
+    before = df['Current']
+    after = df['New']
+    print(f"Data loaded: {len(before)} samples before, {len(after)} samples after")
+
+    print(f'Testing the normality of the data...')
+    differences = after - before
+
+    hist_plot_differences(differences, save_file=f'{plot_dir}/distance_difference.pdf')
+    probplot_differences(differences, save_file=f'{plot_dir}/Quantile_Plots_Against_Normal_Distribution.pdf')
+
+    stat, p = shapiro(differences)
+
+    print(f"Shapiro-Wilk test: W={stat:.4f}, p-value={p:.4f} \n")
+
+    if p > 0.05:
+        print("The differences appear normally distributed.")
+    else:
+        print("The differences do not appear normally distributed.")
 
 
-#######
-# 2-sample independent test for the mean
+    print("\n=== Exploratory Plots ===")
+    plot_histograms(before, after)
 
-#######
-# 2-sample independent test for the proportion
+    print("\n=== Paired t-test ===")
+    paired_ttest(before, after)
 
-#######
-# paired sample test (the same sample) [ex: before and after treatment on the same sample]
+    print("\n=== Independent t-test ===")
+    independent_ttest(before, after)
 
-#######
-# Regression test 
-
-#######
-# chi2 test test relationship between two categorical variables 
-# (similar to regression but with qualitiative variables)
-
-#######
-# one way ANOVA Test is an N-sample independent test 
-
-#Comparing sample to the populations
-# stats.t.ppf(q = 0.025, 
-#             df = n_samp - 1)
-
-# stats.t.ppf(q = 0.975, 
-#             df = n_samp - 1)
-
-# sigma = sample.std()/np.sqrt(n_samp)
-
-# stats.t.interval(0.95,
-#                 df = n_samp - 1,
-#                 loc = sample.mean(),
-#                 scale= sigma)
-
-# stats.t.interval(0.99,
-#                 df = n_samp - 1,
-#                 loc = sample.mean(),
-#                 scale= sigma)
-
-
-# #Comparing two Independent samples
-# ttest_ind(sample1, 
-#           sample2, 
-#           equal_var = False)
-
-# #comparing two paired samples (same sample)
-# ttest_rel(before, 
-#           after)
-
-# #Anova test
-# f_oneway(sample1, 
-#          sample2, 
-#          sample3)
-
-#When doing a post test of the ANOVA you take the significant value 
-#and divide it by the number of tests you did
-#Bonferroni Correction
-
-#reading in the data that has the driving distance of a golf ball after applying a new coating to it
-#Current is old ball driving distance New is the driving distance after coating has been applied
-
-# We are trying to see if the new coat on the ball 
-# has made a significant difference in the driving distance
-
-#reading in the data
-df = pd.read_csv('Golf.csv')
-
-#grabbing the columns
-before = df['Current']
-after = df['New']
-
-threshold = 0.05
-
-#performing the t-test to see if the new coating has made a significant difference
-tscore, pval = ttest_ind(before, 
-                         after, 
-                         equal_var = False)
-
-print("t-score: ", tscore)
-print("p-value: ", pval)
-print('Null hypothesis rejected') if pval < threshold else print('Null hypothesis accepted')
+    print("\n=== One-sample t-test (e.g. comparing to population mean 250) ===")
+    one_sample_ttest(after, 250)
